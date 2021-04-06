@@ -7,8 +7,11 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using ContosoCrafts.Website.Models;
 using ContosoCrafts.WebSite.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace ContosoCrafts.Website
 {
@@ -52,6 +55,12 @@ namespace ContosoCrafts.Website
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapGet("/products", (context) =>
+                {
+                    var products = app.ApplicationServices.GetService<JsonFileProductService>().GetProducts();
+                    var json = JsonSerializer.Serialize<IEnumerable<Product>>(products);
+                    return context.Response.WriteAsync(json);
+                });
             });
         }
     }
